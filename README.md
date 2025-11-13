@@ -1,0 +1,1 @@
+O site basicamente foi feito para você guardar as suas coisas ou deixa-las marcadas para algo futuro ou suas metas para oa próximo dia, foi feito com HTML, CSS e JavaScript, foi adicionado background, rotage coisas básicas do CSS e tambem os comandos do Java como adicionar a tarefa um site muito simples de usar mais complicadinho para fazer.
