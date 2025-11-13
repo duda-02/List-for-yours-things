@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;color: #ffffff;
+            background-image: url(cha.png);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            min-height: 100vh;
+        }
+
+        .todo-app {
+            background-image: url(kachau.jpg);
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.884);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #todo-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        #todo-form input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #bb1a1a;
+        }
+
+        #todo-form button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #a31414;
+            color: #000000;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #todo-form button:hover {
+            background-color: #8b0b0b;
+        }
+
+        #todo-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #todo-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #b60d0d;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #todo-list li:hover {
+            background: #c70808;
+        }
+
+        #todo-list li.completed span {
+            text-decoration: line-through;
+            color: #000000;
+        }
+
+        .delete-btn {
+            background: #a31111;
+            border: none;
+            color: rgb(8, 1, 1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            opacity: 0.8;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        #todo-list li:hover .delete-btn {
+            opacity: 1;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="todo-app">
+        <h1>Lista de Tarefas</h1>
+        <form id="todo-form">
+            <input type="text" id="todo-input" placeholder="O que precisa ser feito?" autocomplete="off">
+            <button type="submit">Adicionar</button>
+        </form>
+        <ul id="todo-list"></ul>
+    </div>
+
+    <script>
+        const todoForm = document.getElementById('todo-form');
+        const todoInput = document.getElementById('todo-input');
+        const todoList = document.getElementById('todo-list');
+
+        // Carrega as tarefas do localStorage ou inicializa um array vazio
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // Função para salvar as tarefas no localStorage
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Função para renderizar as tarefas na tela
+        function renderTasks() {
+            todoList.innerHTML = '';
+
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                if (task.completed) {
+                    li.classList.add('completed');
+                }
+
+                li.innerHTML = `
+                    <span>${task.text}</span>
+                    <button class="delete-btn" data-id="${task.id}">Remover</button>
+                `;
+                li.dataset.id = task.id;
+                todoList.appendChild(li);
+            });
+        }
+
+        // Adiciona nova tarefa
+        todoForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const taskText = todoInput.value.trim();
+
+            if (taskText !== '') {
+                const newTask = {
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false
+                };
+                tasks.push(newTask);
+                saveTasks();
+                renderTasks();
+                todoInput.value = '';
+            }
+        });
+
+        // Marcar como concluído ou remover tarefa
+        todoList.addEventListener('click', function(event) {
+            const target = event.target;
+
+            if (target.classList.contains('delete-btn')) {
+                const taskId = parseInt(target.dataset.id);
+                tasks = tasks.filter(task => task.id !== taskId);
+            } else if (target.closest('li')) {
+                const taskId = parseInt(target.closest('li').dataset.id);
+                const task = tasks.find(task => task.id === taskId);
+                if (task) {
+                    task.completed = !task.completed;
+                }
+            }
+
+            saveTasks();
+            renderTasks();
+        });
+
+        // Renderiza tarefas ao carregar a página
+        renderTasks();
+    </script>
+</body>
+</html>
